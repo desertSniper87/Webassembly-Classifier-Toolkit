@@ -20,7 +20,7 @@ A Wast functions analyser tool
 ################# Global Variables declaration #####################
 ####################################################################
 
-fp_cn = 'aes_keccak.txt'
+fp_cn = 'fingerprint.json'
 path = './'
 infile = []
 cn = []
@@ -45,8 +45,8 @@ def dump_on_file(path, file, data):
         f.close()
         return 1
     except Exception as e:
-        print "[!] Can't dump on file output: " + path + file
-        print e
+        print("[!] Can't dump on file output: " + path + file)
+        print(e)
         return 0
 
 def load_from_file(path, file):
@@ -56,8 +56,8 @@ def load_from_file(path, file):
         f.close()
         return data
     except Exception as e:
-        print "[!] Can't load from file: " + path + file
-        print e
+        print("[!] Can't load from file: " + path + file)
+        print(e)
         return None
 
 #########################################################################
@@ -135,9 +135,9 @@ class Seq_manager:
         begin = 0
         dif = len(seq) - len(temp)
         if dif < 0:
-            print 'dif '+ str(dif)
-            print seq
-            print temp
+            print('dif '+ str(dif))
+            print(seq)
+            print(temp)
 
         for i in range(dif+1):
             for idx, el in enumerate(sorted(seq)):
@@ -166,10 +166,10 @@ class Seq_manager:
             l1.pop(0)
 
     def print_data(self):
-        print 'state: ' + str(self.state)
-        print 'seq:' + str(self.seq)
-        print 'tseq: ' + str(self.tseq)
-        print 'count ' + str(self.seq_count)
+        print('state: ' + str(self.state))
+        print('seq:' + str(self.seq))
+        print('tseq: ' + str(self.tseq))
+        print('count ' + str(self.seq_count))
 
     def check_seq(self):
         ret = None
@@ -277,14 +277,14 @@ def print_loops():
     global unrolled_loops
 
     for idx in unrolled_loops:
-        print('{x} Function {idx} loops{x}'.format(x = '='*35,idx=idx))
-        print "Unrolled loops: "
-        print json.dumps(unrolled_loops[idx], indent=4, sort_keys=True)
-        print "Loops op count"
+        print(('{x} Function {idx} loops{x}'.format(x = '='*35,idx=idx)))
+        print("Unrolled loops: ")
+        print(json.dumps(unrolled_loops[idx], indent=4, sort_keys=True))
+        print("Loops op count")
         if idx in in_loopf:
-            print json.dumps(in_loopf[idx], indent=4, sort_keys=True)
+            print(json.dumps(in_loopf[idx], indent=4, sort_keys=True))
         else:
-            print "No loops"
+            print("No loops")
 
 def print_loopop_count():
     global in_loopf
@@ -292,12 +292,12 @@ def print_loopop_count():
     for key in functions:
         if key in in_loopf:
             print(key)
-            print(in_loopf[key])
+            print((in_loopf[key]))
 
 def printfun(idx):
     global functions
     f = functions[idx]['code']
-    print('{x} Function {idx} {x}'.format(x = '='*35,idx=idx))
+    print(('{x} Function {idx} {x}'.format(x = '='*35,idx=idx)))
     for l in f:
         print(l)
 
@@ -313,32 +313,31 @@ def printf_ops(idx):
     f = functions[idx]
     for op in ops:
         if functions[idx][op]:
-            print(op + ': ' + str(functions[idx][op]))
+            print((op + ': ' + str(functions[idx][op])))
 
 def printfs_ops():
     for key in sorted(functions):
-        print('{x} f({idx}) operands {x}'.format(x = '='*35,idx=key))
+        print(('{x} f({idx}) operands {x}'.format(x = '='*35,idx=key)))
         printf_ops(key)
 
 def print_cgraph():
     global cgraph
     for f in sorted(cgraph):
-        print('{x} f({idx}) calls {x}'.format(x = '='*35,idx=f))
+        print(('{x} f({idx}) calls {x}'.format(x = '='*35,idx=f)))
         for call in sorted(cgraph[f]):
             if(call == 'call_list'):
-                print('Call sequence: ' + str(cgraph[f][call]))
+                print(('Call sequence: ' + str(cgraph[f][call])))
             else:
-                print('call ' + call + ": " + str(cgraph[f][call]))
+                print(('call ' + call + ": " + str(cgraph[f][call])))
 
 def print_cgraph_ops():
-    global cgraph
     for f in sorted(cgraph):
-        print('{x} f({idx}) calls {x}'.format(x = '='*35,idx=f))
+        print(('{x} f({idx}) calls {x}'.format(x = '='*35,idx=f)))
         for call in sorted(cgraph[f]):
             if(call == 'call_list'):
-                print('Call sequence: ' + str(cgraph[f][call]))
+                print(('Call sequence: ' + str(cgraph[f][call])))
             else:
-                print('call ' + call + ": " + str(cgraph[f][call]))
+                print(('call ' + call + ": " + str(cgraph[f][call])))
         printf_ops(f)
 
 def print_cflow(indent, idx):
@@ -346,16 +345,16 @@ def print_cflow(indent, idx):
     global callstack
 
     if indent == 0:
-        print('{x} f({idx}) Call Flow {x}'.format(x = '='*35,idx=idx))
+        print(('{x} f({idx}) Call Flow {x}'.format(x = '='*35,idx=idx)))
     callstack.append(idx)
     next = cgraph[idx]['call_list']
 
     for c in next:
         if c not in callstack:
-            print('{x}-call:{n}'.format(x='\t'*indent, n=c))
+            print(('{x}-call:{n}'.format(x='\t'*indent, n=c)))
             print_cflow(indent+1,c)
         else:
-            print('{x}-call:{n} -->'.format(x='\t'*indent, n=c))
+            print(('{x}-call:{n} -->'.format(x='\t'*indent, n=c)))
 
     callstack.remove(idx)
 
@@ -374,26 +373,29 @@ def print_detect(detect):
     global cn
 
     for key in sorted(detect):
-        print('{x} Best fit {idx} {x}'.format(x = '='*35,idx=key))
-        print('function: {x}'.format(x = detect[key]['fname']))
-        print('off: {x}'.format(x = detect[key]['off']))
-        print('found_op: {x}/{totf} on {totcn}'.format(x = detect[key]['found_op'],
-                                                       totf = detect[key]['tot_onfun_op'], totcn =  detect[key]['tot_oncn_op']))
-        print cn[key]
+        print(('{x} Best fit {idx} {x}'.format(x = '='*35,idx=key)))
+        print(('function: {x}'.format(x = detect[key]['fname'])))
+        print(('off: {x}'.format(x = detect[key]['off'])))
+        print(('found_op: {x}/{totf} on {totcn}'.format(x = detect[key]['found_op'],
+        totf = detect[key]['tot_onfun_op'], totcn =  detect[key]['tot_oncn_op'])))
+
+        try:
+            print(cn[key])
+        except TypeError:
+            pass
 
 def print_detect_v(detect):
-    global cn
-    print detect
+    print(detect)
 
     for t in cn:
-        print('{x} Type : {idx} {x}'.format(x = '='*35,idx=t))
+        print(('{x} Type : {idx} {x}'.format(x = '='*35,idx=t)))
         for key in sorted(cn[t]):
-            print('{x} Best fit {idx} {x}'.format(x = '='*35,idx=key))
-            print('function: {x}'.format(x = detect[key]['fname']))
-            print('off: {x}'.format(x = detect[key]['off']))
-            print('found_op: {x}/{totf} on {totcn}'.format(x = detect[key]['found_op'],
-                                                           totf = detect[key]['tot_onfun_op'], totcn =  detect[key]['tot_oncn_op']))
-            print cn[t][key]
+            print(('{x} Best fit {idx} {x}'.format(x = '='*35,idx=key)))
+            print(('function: {x}'.format(x = detect[key]['fname'])))
+            print(('off: {x}'.format(x = detect[key]['off'])))
+            print(('found_op: {x}/{totf} on {totcn}'.format(x = detect[key]['found_op'],
+                                                           totf = detect[key]['tot_onfun_op'], totcn =  detect[key]['tot_oncn_op'])))
+            print(cn[t][key])
 ##############################################################
 ################# Dump on file Functions #####################
 ##############################################################
@@ -430,7 +432,7 @@ def save_crypto(f):
             name = 'skein'
         if key in blake:
             name = 'blake'
-            print key
+            print(key)
         if name != None:
             dump_ops[key] = dict()
             for op in functions[key]:
@@ -457,11 +459,13 @@ def save_ops(f):
 
     dump_on_file(path, f, dump_ops)
 
-def dump_detect_stats():
+def dump_detect_stats(dump_stat):
     global detect
     global path
-    global infile
+    # global infile
+    infile = dump_stat
     global gen_crypto
+
     goodness = 0.7
     off_rate = 1
     stat = dict()
@@ -652,7 +656,10 @@ def detect_cryptonight():
                 bestfit['off'] = off
                 bestfit['found_op'] = found_op
                 bestfit['type'] = f
-                bestfit['tot_onfun_op'] = len({i:j for i,j in functions[key].items() if (j > 0 and i != 'code')})
+                try:
+                    bestfit['tot_onfun_op'] = len({i:j for i,j in list(functions[key].items()) if (j > 0 and i != 'code')})
+                except TypeError:
+                    pass
         detect[f] = bestfit
 
 def detect_cryptonight_v():
@@ -685,7 +692,7 @@ def detect_cryptonight_v():
                         bestfit['fname'] = key
                         bestfit['off'] = off
                         bestfit['found_op'] = found_op
-                        bestfit['tot_onfun_op'] = len({i:j for i,j in functions[key].items() if (j > 0 and i != 'code')})
+                        bestfit['tot_onfun_op'] = len({i:j for i,j in list(functions[key].items()) if (j > 0 and i != 'code')})
                     bestfit['type']  = c
         detect[f] = bestfit
 
@@ -741,7 +748,7 @@ def detect_crypto(flag):
     gen_crypto['loop_count'] = loop_count
     gen_crypto['loop_unr_count'] = un_loops_count
 
-    print gen_crypto
+    print(gen_crypto)
     #TODO
 
 
@@ -756,38 +763,35 @@ def detect_crypto(flag):
 ########################### MAIN  ###############################
 #################################################################
 
-def wast_analysis():
-    global fp_cn
-    global banner
-    global path
-    global infile
+def wast_analysis(file, path_l=None, disas=None, calltree=None, print_operands=None, allcalltree=None,
+                  dump_operands=None, analyse_crypto=None, dump_stat=None, save_fp=None):
 
-    parser = argparse.ArgumentParser(description=banner, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument('-i', '--inputfile', help="Wast input file name",metavar=('FILENAME'))
-    parser.add_argument('-d','--disas', action='store_true', help="Disassemble functions code")
-    parser.add_argument('-cts','--allcalltree', action='store_true', help="Print all calls")
-    parser.add_argument('-ct','--calltree', help="Print call tree from the specified function", metavar=('ENTRYPOINT'))
-    parser.add_argument('-ul','--unrolled_loops',type=int, nargs=2, help="Detect unrolled loops", metavar=('MAXLEN','MINREP'))
-    parser.add_argument('-pl','--print_loops', action='store_true', help="Print Loops")
-    parser.add_argument('-po','--print_operands', action='store_true', help="Print operands")
-    parser.add_argument('-o','--dump_operands', action='store_true', help="Dump on file the operation count")
-    parser.add_argument('-ac','--analyse_crypto', help="Analyse the binary for crypto functions [fingerprint input file needed]", metavar=('FINGERPRINT'))
-    parser.add_argument('-os','--dump_stat', help="Dump on file the analysis statistics", metavar=('PATH'))
-    parser.add_argument('-pt','--path', help="specify path", metavar=('PATH'))
-    parser.add_argument('-sp','--save_fp', help="Save the fingerprint of the analysed file", metavar=('FILENAME'))
+    # parser = argparse.ArgumentParser(description=banner, formatter_class=argparse.RawDescriptionHelpFormatter)
+    # parser.add_argument('-i', '--inputfile', help="Wast input file name",metavar=('FILENAME'))
+    # parser.add_argument('-d','--disas', action='store_true', help="Disassemble functions code")
+    # parser.add_argument('-cts','--allcalltree', action='store_true', help="Print all calls")
+    # parser.add_argument('-ct','--calltree', help="Print call tree from the specified function", metavar=('ENTRYPOINT'))
+    # parser.add_argument('-ul','--unrolled_loops',type=int, nargs=2, help="Detect unrolled loops", metavar=('MAXLEN','MINREP'))
+    # parser.add_argument('-pl','--print_loops', action='store_true', help="Print Loops")
+    # parser.add_argument('-po','--print_operands', action='store_true', help="Print operands")
+    # parser.add_argument('-o','--dump_operands', action='store_true', help="Dump on file the operation count")
+    # parser.add_argument('-ac','--analyse_crypto', help="Analyse the binary for crypto functions [fingerprint input file needed]", metavar=('FINGERPRINT'))
+    # parser.add_argument('-os','--dump_stat', help="Dump on file the analysis statistics", metavar=('PATH'))
+    # parser.add_argument('-pt','--path', help="specify path", metavar=('PATH'))
+    # parser.add_argument('-sp','--save_fp', help="Save the fingerprint of the analysed file", metavar=('FILENAME'))
 
-    args = parser.parse_args()
-    infile = args.inputfile.split('/')
-    infile = infile[len(infile) - 2] + "_" + infile[len(infile) - 1]
-    f = open(args.inputfile, 'r')
-    text = f.read().split('\n')
+    # args = parser.parse_args()
+    # infile = inputfile.split('/')
+    # infile = infile[len(infile) - 2] + "_" + infile[len(infile) - 1]
+    # f = open(args.inputfile, 'r')
+    text = file.read().split('\n')
 
-    if args.path:
-        path = args.path
+    if path_l:
+        path = path_l
     # Identify and add to functions the functions
     find_functions(text)
 
-    if args.disas:
+    if disas:
         printallf()
         return
 
@@ -797,45 +801,42 @@ def wast_analysis():
     # Explore call graph and count aritmetic operation
     count_op()
     count_inloops()
-    if args.unrolled_loops:
-        find_unrl_loops(args.unrolled_loops[0],args.unrolled_loops[1])
+    if unrolled_loops:
+        find_unrl_loops(unrolled_loops[0],unrolled_loops[1])
 
-    if args.print_operands:
+    if print_operands:
         print_cgraph_ops()
 
-    if args.allcalltree:
+    if allcalltree:
         print_cflows()
 
-    if args.calltree:
-        if args.calltree in cgraph:
-            print_cflow(0,args.calltree)
+    if calltree:
+        if calltree in cgraph:
+            print_cflow(0,calltree)
         else:
-            print 'Error: now entry function with the name \'' + args.calltree + '\' was found'
+            print('Error: now entry function with the name \'' + calltree + '\' was found')
             return
 
-    if args.dump_operands:
-        save_ops(args.dump_operands)
+    if dump_operands:
+        save_ops(dump_operands)
 
-    if args.analyse_crypto:
-        fp_cn = args.analyse_crypto
+    if analyse_crypto:
+        fp_cn = analyse_crypto
         detect_cryptonight()
         print_detect(detect)
-        if args.unrolled_loops:
+        if unrolled_loops:
             detect_crypto(True)
         else:
             detect_crypto(False)
-        if args.dump_stat:
-            path = args.dump_stat
-            dump_detect_stats()
+        if dump_stat:
+            # path = dump_stat
+            dump_detect_stats(dump_stat)
         #dump_detect_stats_v()
 
-    if args.print_loops:
-        if args.unrolled_loops:
+    if print_loops:
+        if unrolled_loops:
             print_loops()
         else:
             print_loopop_count()
-    if args.save_fp:
-        save_crypto(args.save_fp)
-
-if __name__== "__main__":
-    wast_analysis()
+    if save_fp:
+        save_crypto(save_fp)
